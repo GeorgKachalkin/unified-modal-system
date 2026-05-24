@@ -1,8 +1,10 @@
-/* ============================================
-   Unified Modal System — Уведомления
-   Классы: .um_info, .um_success, .um_warning, .um_error
-   ============================================ */
-
+/*
+ * Unified Modal System (UM) — Core Styles
+ * @version 1.0.0
+ * @license MIT
+ * @copyright 2026 [KachalkinGeorg + Qwen Ассистент / Unified Modal System (UM)]
+ * @see https://github.com/KachalkinGeorg/unified-modal-system
+ */
 .um_info,
 .um_success,
 .um_warning,
@@ -113,30 +115,11 @@
     }
 }
 
-.um_modal {display: none;position: fixed;background: #fff;border: 1px solid #d7d7d7;border-radius: 4px;box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);padding: 15px 20px;min-width: 200px;max-width: 90vw;max-height: 80vh;overflow: auto;z-index: 10000;font-family: inherit;font-size: 14px;}
-.um_modal-close {position: absolute;top: 8px;right: 10px;width: 20px;height: 20px;cursor: pointer;color: #999;transition: color 0.2s;font-size: 18px;line-height: 1;font-weight: bold;background: none;border: none;padding: 0;}
-.um_modal-close::after {content: "×";position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
-.um_modal-close:hover {color: #333;}
-.um_modal > div:not(.um_modal-close) {margin-top: 10px;}
-.um_modal-header {background: #000;}
-.um_modal-title {text-align: center;padding: 10px;margin-left: 10px;margin-right: 10px;}
-.um_modal-info {padding: 5px;}
-.um_modal-content {display: none;width: 500px;}
-.um_modal-controller {display: none;}
-.um_modal-controller:checked ~ .um_modal-content {display: block;position: fixed;z-index: 100;background: #fff;border-radius: 5px;box-shadow: 2px 2px 5px #000000;top: 50%;left: 50%;box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);}
-.um_modal-social {display: none;position: fixed;z-index: 100;background: #eee;padding: 5px;border-radius: 5px;box-shadow: 2px 2px 5px #000000;top: 50%;left: 50%;}
-.um_modal-social-close {position: absolute;font-size: 10px;cursor: pointer;right: 4px;top: 4px;}
-.um_modal-erorr {display: none;position: fixed;z-index: 100;background: #eee;padding: 5px;border-radius: 5px;box-shadow: 2px 2px 5px #000000;top: 50%;left: 50%;}
-.um_modal-erorr-close {position: absolute;font-size: 10px;cursor: pointer;right: 4px;top: 4px;}
-.um_modal-bbcode {display: none;z-index: 100;background: #eee;padding: 5px;border-radius: 5px;box-shadow: 2px 2px 5px #000000;}
-.um_modal-bbcode-close {position: absolute;font-size: 10px;cursor: pointer;right: 4px;top: 4px;}
-
-.um_modal .form-control {display: block;width: 100%;padding: 8px 12px;font-size: 14px;line-height: 1.5;color: #495057;background-color: #fff;border: 1px solid #ced4da;border-radius: 4px;box-sizing: border-box;transition: border-color 0.15s ease;}
-.um_modal .form-control:focus {border-color: #80bdff;outline: 0;box-shadow: 0 0 0 3px rgba(0,123,255,0.25);}
-.um_modal .table {width: 100%;border-collapse: collapse;margin-bottom: 1rem;}
-.um_modal .table td, 
-.um_modal .table th {padding: 10px 12px;vertical-align: middle;border: 1px solid #dee2e6;}
-.um_modal .table-striped tbody tr:nth-of-type(odd) {background-color: rgba(0,0,0,0.03);}
-.um_modal .text-center { text-align: center; }
-.um_modal .text-danger { color: #dc3545; }
+.um_modal {display: none;position: fixed;background: #fff;border: 1px solid #d7d7d7;border-radius: 4px;box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);min-width: 200px;max-width: 90vw;max-height: 80vh;overflow: auto;z-index: 10000;font-family: inherit;font-size: 14px;}
 .um_modal b, .um_modal strong { font-weight: 600; }
+.um_modal-content {width: 100%;display: flex;position: relative;flex-direction: column;}
+.um_modal-header {display: flex;flex-direction: row;justify-content: space-between;align-items: center;padding: .625rem 1.25rem;transition: opacity .25s ease-out;}
+.um_modal-title {font-size: .875rem;font-weight: 600;line-height: 1.75rem;text-transform: uppercase;letter-spacing: .0625rem;}
+.um_modal-close {cursor: pointer;font-size: 1.5em;color: #666;}
+.um_modal-body {padding: 15px 20px;}
+.um_modal-footer {display: flex;flex-shrink: 0;flex-wrap: wrap;align-items: center;justify-content: flex-end;padding: 1.25rem;}

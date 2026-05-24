@@ -1,10 +1,10 @@
 /**
  * Unified Modal System (UM)
  * @description Универсальная система модальных окон, подтверждений и уведомлений
- * @version 1.0.0
+ * @version 2.0.0 - 2026-05-24
  * @license MIT
- * @copyright 2026 [KachalkinGeorg + Qwen Ассистент / Unified Modal System (UM)]
- * @see https://github.com/KachalkinGeorg/unified-modal-system
+ * @copyright 2026 [GeorgKachalkin + Qwen Ассистент / Unified Modal System (UM)]
+ * @see https://github.com/GeorgKachalkin/unified-modal-system
  */
 
 /**
@@ -47,7 +47,7 @@ function UM_ShowModal(opts) {
             }
         };
 
-        if (typeof $.post !== 'undefined' && window.UM_CONFIG && window.UM_CONFIG.jquery_ui === 'true') {
+        if (typeof $.post !== 'undefined' && window.UM_CONFIG && (window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true')) {
             $.post(url, postData, handleResponse).fail(function(){ if (typeof UM_Alert === 'function') UM_Alert('error', 'Ошибка соединения'); });
         } else {
             var fd = new FormData();
@@ -69,7 +69,9 @@ function UM_ShowModal(opts) {
 
     // Функция отрисовки модала
     var renderModal = function(fetchedHtml) {
-        var isJquery = window.UM_CONFIG && window.UM_CONFIG.jquery_ui === 'true' && typeof $.ui !== 'undefined';
+        var isJquery = window.UM_CONFIG && 
+               (window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true') && 
+               typeof $.ui !== 'undefined';
 
         // Тело: descr + загруженный контент
         var bodyHtml = '';
@@ -144,20 +146,48 @@ function UM_ShowModal(opts) {
             // Кастомный режим
             var modal = document.createElement('div');
             modal.className = 'gk-modal um_modal ' + (opts.className || '');
+			
+			var classHeader = ' ' + (opts.classHeader || '');
+			var classTitle = ' ' + (opts.classTitle || '');
+			var classBody = ' ' + (opts.classBody || '');
+			var classFooter = ' ' + (opts.classFooter || '');
+			var classContent = ' ' + (opts.classContent || '');
+			
             modal.innerHTML = 
-                '<div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #eee;">'+
-                    '<div style="font-weight:600;font-size:1.1em;">'+esc(title)+'</div>'+
-                    '<a role="button" class="modal-close" style="cursor:pointer;font-size:1.5em;color:#666;">&times;</a>'+
-                '</div>'+
-                '<div class="modal-body" style="overflow-y:auto;flex:1;padding:0 4px;max-height:70vh;">'+bodyHtml+'</div>'+
-                '<div class="modal-footer" style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;text-align:right;">'+
-                    buttons.map(function(b, i) {
-                        var typeAttr = b.type === 'submit' ? 'type="submit"' : 'type="button"';
-                        var style = b.class === 'primary' ? 'background:#007bff;color:#fff;border:none;' : 
-                                    (b.class === 'danger' ? 'background:#dc3545;color:#fff;border:none;' : 'border:1px solid #ccc;background:#fff;');
-                        return '<button data-idx="'+i+'" '+typeAttr+' style="margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;'+style+'">'+esc(b.text)+'</button>';
-                    }).join('')+
-                '</div>';
+					'<div class="um_modal-content'+classContent+'">'+
+						'<div class="um_modal-header'+classHeader+'">'+
+							'<h5 class="um_modal-title'+classTitle+'">'+esc(title)+'</h5>'+
+							'<a role="button" class="um_modal-close"><span>&times;</span></a>'+
+						'</div>'+
+						'<div class="um_modal-body'+classBody+'">'+bodyHtml+'</div>'+
+					'</div>'+
+					'<div class="um_modal-footer'+classFooter+'">'+
+						buttons.map(function(b, i) {
+							var typeAttr = b.type === 'submit' ? 'type="submit"' : 'type="button"';
+							var btnAttr = '';
+							var cls = (typeof b.class === 'string') ? b.class.trim() : '';
+							
+							// Если переданы кастомные CSS-классы (не совпадают с зарезервированными)
+							if (cls !== '' && cls !== 'primary' && cls !== 'danger' && cls !== 'secondary') {
+								// Используем реальный class, убираем жёсткие inline-стили, оставляем только базу
+								btnAttr = 'class="' + esc(cls) + '" style="margin-left:8px;cursor:pointer;"';
+							} 
+							// Фоллбэк: старые ключевые слова → inline-стили
+							else {
+								var style = 'margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;border:1px solid #ccc;background:#fff;';
+								if (cls === 'primary') {
+									style = 'margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;background:#007bff;color:#fff;border:none;';
+								} else if (cls === 'danger') {
+									style = 'margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;background:#dc3545;color:#fff;border:none;';
+								} else if (cls === 'secondary') {
+									style = 'margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;background:#f8f9fa;color:#212529;border:1px solid #ccc;';
+								}
+								btnAttr = 'style="' + style + '"';
+							}
+							
+							return '<button data-idx="'+i+'" '+typeAttr+' '+btnAttr+'>'+esc(b.text)+'</button>';
+						}).join('')+
+				'</div>';
             Object.assign(modal.style, {position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:10002,borderRadius:'8px',boxShadow:'0 4px 30px rgba(0,0,0,0.25)',maxWidth:'95%',width:width+'px',background:'#fff',display:'flex',flexDirection:'column'});
             
             var bd = document.createElement('div'); bd.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:10001;';
@@ -174,9 +204,9 @@ function UM_ShowModal(opts) {
             var closeFn = function(){ if(modal.parentNode) modal.remove(); if(bd.parentNode) bd.remove(); document.removeEventListener('keydown',onKey); };
             var onKey = function(e){ if(e.key=='Escape') closeFn(); }; document.addEventListener('keydown', onKey);
             
-            var cb = modal.querySelector('.modal-close'); if(cb) cb.onclick = function(e){ e.preventDefault(); closeFn(); };
+            var cb = modal.querySelector('.um_modal-close'); if(cb) cb.onclick = function(e){ e.preventDefault(); closeFn(); };
             
-            var ftr = modal.querySelector('.modal-footer');
+            var ftr = modal.querySelector('.um_modal-footer');
             if(ftr) ftr.querySelectorAll('button[data-idx]').forEach(function(btn, i){
                 var h = buttons[i].click; if(h) btn.onclick = function(e){ e.preventDefault(); h.call(modal, closeFn); };
             });
@@ -187,14 +217,14 @@ function UM_ShowModal(opts) {
                 element: modal,
                 close: closeFn,
                 setContent: function(newHtml) {
-                    var container = modal.querySelector('.modal-body');
+                    var container = modal.querySelector('.um_modal-body');
                     if (container) container.innerHTML = newHtml;
                 },
                 setButtons: function(newButtons) {
-                    var footer = modal.querySelector('.modal-footer');
+                    var footer = modal.querySelector('.um_modal-footer');
                     if (!footer && newButtons.length > 0) {
                         footer = document.createElement('div');
-                        footer.className = 'modal-footer';
+                        footer.className = 'um_modal-footer';
                         footer.style.cssText = 'margin-top:20px;padding-top:16px;border-top:1px solid #eee;text-align:right;';
                         modal.appendChild(footer);
                     }
@@ -225,32 +255,34 @@ function UM_ShowModal(opts) {
     };
 
     // Запуск
-    var useJq = (window.UM_CONFIG && 
-                (window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true')) && 
-                typeof $.post !== 'undefined';
+	var useJq = (window.UM_CONFIG &&
+		(window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true')) &&
+		typeof $.post !== 'undefined';
 
-    if (isAction) {
-        renderModal('');
-    } else {
-        if (useJq) {
-            // Режим jQuery UI
-            $.post(url, postData, renderModal).fail(function(){ 
-                if (typeof UM_Alert === 'function') UM_Alert('error', 'Ошибка загрузки'); 
-            });
-        } else {
-            // Режим Fetch (Vanilla JS)
-            var fd = new FormData(); 
-            for(var k in postData) if(postData.hasOwnProperty(k)) fd.append(k, postData[k]);
-            
-            fetch(url, { method:'POST', body:fd })
-                .then(function(r){ return r.text(); })
-                .then(renderModal)
-                .catch(function(err){ 
-                    console.warn('UM_ShowModal fetch error:', err);
-                    if (typeof UM_Alert === 'function') UM_Alert('error', 'Ошибка загрузки: ' + url); 
-                });
-        }
-    }
+	if (isAction) {
+		// Режим подтверждения: сразу показываем модал
+		renderModal('');
+	} else if (url) {
+		// 🔹 ЕСТЬ url → загружаем контент по AJAX
+		if (useJq) {
+			$.post(url, postData, renderModal).fail(function(){
+				if (typeof UM_Alert === 'function') UM_Alert('error', 'Ошибка загрузки');
+			});
+		} else {
+			var fd = new FormData();
+			for(var k in postData) if(postData.hasOwnProperty(k)) fd.append(k, postData[k]);
+			fetch(url, { method:'POST', body:fd })
+				.then(function(r){ return r.text(); })
+				.then(renderModal)
+				.catch(function(err){ 
+					console.warn('UM_ShowModal fetch error:', err);
+					if (typeof UM_Alert === 'function') UM_Alert('error', 'Ошибка загрузки: ' + url); 
+				});
+		}
+	} else {
+		// 🔹 НЕТ url → просто показываем descr/контент без загрузки
+		renderModal('');
+	}
 }
 
 /**
@@ -298,7 +330,7 @@ function UM_SaveForm(cfg) {
         }
 
         // Кастомный режим
-        var footer = modalEl.querySelector('.modal-footer');
+        var footer = modalEl.querySelector('.um_modal-footer');
         if (!footer) return;
 
         footer.innerHTML = btns.map(function(b, i) {
@@ -327,10 +359,10 @@ function UM_SaveForm(cfg) {
     var _updateModalBody = function(modalEl, newHtml) {
         var body = null;
         
-        // Определяем режим и ищем .modal-body соответствующим методом
+        // Определяем режим и ищем .um_modal-body соответствующим методом
         if (typeof $.ui !== 'undefined' && $(modalEl).data('ui-dialog')) {
             // jQuery UI: используем jQuery для надёжного поиска и обновления
-            var body = $(modalEl).find('.modal-body');
+            var body = $(modalEl).find('.um_modal-body');
             if (body.length) {
                 body.html(newHtml);
                 return true;
@@ -343,7 +375,7 @@ function UM_SaveForm(cfg) {
             }
         } else {
             // Кастомный режим: нативный DOM
-            body = modalEl.querySelector('.modal-body');
+            body = modalEl.querySelector('.um_modal-body');
             if (body) {
                 body.innerHTML = newHtml;
                 return true;
@@ -424,8 +456,9 @@ function UM_SaveForm(cfg) {
     };
 
     // Автоопределение метода отправки
-    var isJq = typeof $ !== 'undefined' && typeof $.ajax !== 'undefined' && 
-               window.UM_CONFIG && window.UM_CONFIG.jquery_ui === 'true';
+	var isJq = typeof $ !== 'undefined' && typeof $.ajax !== 'undefined' &&
+			   window.UM_CONFIG && 
+			   (window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true');
 
     if (isJq) {
         $.ajax({
@@ -525,23 +558,30 @@ function UM_InlineAction(cfg) {
  * @param {Function} [onCancel] Колбэк при отмене
  */
 function UM_ConfirmAction(message, onConfirm, onCancel) {
-    // Если подключен jQuery UI и включены ajax-окна
-    if (typeof $.ui !== 'undefined' && typeof $.fn.dialog !== 'undefined') {
+    
+    // 🔹 Безопасная проверка: сначала $, потом $.ui
+    var hasJqueryUi = (typeof $ !== 'undefined') && 
+                      (typeof $.ui !== 'undefined') && 
+                      (typeof $.fn.dialog !== 'undefined');
+    
+	// Если подключен jQuery UI и включены ajax-окна
+    if (hasJqueryUi && window.UM_CONFIG && (window.UM_CONFIG.jquery_ui === true || window.UM_CONFIG.jquery_ui === 'true')) {
+        // ✅ Режим jQuery UI
         const dialog = $('<div title="Подтверждение">' + message + '</div>').dialog({
             modal: true,
             width: 400,
             resizable: false,
             buttons: [
                 {
-                    text: 'Отмена',
+                    text: lang.cancel || 'Отмена',
                     click: function() {
                         $(this).dialog('close');
                         if (typeof onCancel === 'function') onCancel();
                     }
                 },
                 {
-                    text: 'Удалить',
-                    class: 'ui-priority-secondary',
+                    text: lang.confirm || 'Подтвердить',
+                    class: 'ui-priority-primary',
                     click: function() {
                         $(this).dialog('close');
                         if (typeof onConfirm === 'function') onConfirm();

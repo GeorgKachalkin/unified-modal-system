@@ -2,10 +2,10 @@
 Unified Modal System (UM)
 
 > 🔄 **Migration Notice**  
-> This repository has been moved to `@GeorgKachalkin/unified-modal-system` due to loss of access to the original account.  
-> All code, history, and development continue here. The previous repository is archived.
+> Этот репозиторий является продолжением проекта после потери доступа к оригинальному аккаунту: `@KachalkinGeorg/unified-modal-system`.  
+> Вся история коммитов, функционал и лицензия сохранены. Разработка продолжается здесь.
 
-**Unified Modal System (UM)** - это система модальных окон, которая определяет сама, что именно отображать.
+**Unified Modal System (UM)** - это система модальных окон, которая определяет сама, что именно отображать. Демонстрация: [Тестовый режим окон](https://georgkachalkin.github.io/unified-modal-system/)
 
 - **UM_ShowModal()** - универсальное модальное окно с загрузкой AJAX
 - **UM_SaveForm()** - универсальное сохранение формы в модале
@@ -21,6 +21,53 @@ Unified Modal System (UM)
 - ♻️ Переиспользуемость: одна функция для всех плагинов
 - 🎨 Гибкость: кастомные кнопки, стили, колбэки
 
+🔗 **Зависимости**
+
+- ✅ Обязательные
+- **Нет!** Система работает в чистом JavaScript (Vanilla JS).
+- ⚙️ Опциональные (для режима jQuery UI)
+
+> 💡 Если вы хотите использовать модальные окна через jQuery UI:
+
+| Библиотека | Минимальная версия | Назначение |
+| ----------- | ----------- | ----------- |
+| jQuery 	| 1.9.1+ 	| обязательно 	|
+| jQuery UI 	| 1.12.1+ 	| Компонент .dialog() для модальных окон 	|
+
+🔧 **Подключение jQuery UI**
+
+```
+<!-- 1. jQuery (минимум 1.9.1) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous"></script>
+
+<!-- 2. jQuery UI (CSS + JS, минимум 1.12.1) -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" 
+        integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" 
+        crossorigin="anonymous"></script>
+
+<!-- 3. Конфигурация UM -->
+<script>
+  window.UM_CONFIG = { jquery_ui: true }; // Включить режим jQuery UI
+  var lang = { close: 'Закрыть', save: 'Сохранить', cancel: 'Отмена' };
+</script>
+
+<!-- 4. Unified Modal System -->
+<link href="/unified-modal-system/um-core.css" type="text/css" rel="stylesheet">
+<script src="/unified-modal-system/um-core.js"></script>
+```
+
+🔄 **Автоопределение режима**
+
+Система сама определит доступные библиотеки:
+Если `$.ui` и `$.fn.dialog` доступны + `UM_CONFIG.jquery_ui === true` → режим jQuery UI
+Иначе → режим Custom (Vanilla JS)
+Вы можете принудительно выбрать режим через `window.UM_CONFIG.jquery_ui`.
+
+Посмотрет можно [здесь](https://georgkachalkin.github.io/unified-modal-system/)
+
 📦 **Установка**
 
 ```
@@ -31,7 +78,7 @@ Unified Modal System (UM)
 <!-- Инициализация конфигурации (обязательно) -->
 <script>
 window.UM_CONFIG = {
-    jquery_ui: true,  // или false
+    jquery_ui: false,  // true → режим jQuery UI / false Custom (Vanilla JS)
 };
 var lang = {
     close: 'Закрыть',
@@ -64,6 +111,21 @@ var lang = {
 | onSuccess | function 		| null 							| Колбэк при успехе (при action: true) |
 | onError 	| function 		| null 							| Колбэк при ошибке (при action: true) |
 | successMessage | string 	| 'Операция выполнена' 			| Текст уведомления об успехе |
+
+- В версии 2.0.0 доступные новые **параметры opts**:
+
+| Параметр | Тип | По умолчанию | Описание |
+| ----------- | ----------- | ----------- | ----------- |
+| className   | string 		| ''	      | CSS-класс корня |
+| classHeader | string 		| ''	      | CSS-класс Шапка |
+| classTitle  | string 		| ''	      | CSS-класс Заголовок |
+| classBody   | string 		| ''	      | CSS-класс Тело |
+| classFooter | string 		| ''	      | CSS-класс Футер |
+| classContent | string 	| ''	      | CSS-класс Обёртка контента |
+	
+> ⚠️ **ВНИАНИЕ**
+> Опции classHeader, classTitle, classBody, classFooter, classContent работают только в режиме Custom (Vanilla JS). 
+> В режиме jQuery UI они игнорируются, так как структура диалога управляется библиотекой.
 
 **Объект api в onLoad:**
 ```
@@ -202,6 +264,8 @@ buttons: [
     }
 ]
 ```
+
+- В версии 2.0.0 параметр **class** стал принимать любые кастомные классы, по мимо *secondary | primary | danger*
 
 🔹 2. **UM_SaveForm(cfg)** — сохранение форм
 Универсальная функция для отправки любой формы внутри модала. Обрабатывает успех, ошибки валидации, обновление интерфейса.
@@ -648,3 +712,7 @@ function plugins_save() {
     UM_SaveForm({ /* конфиг */ }); // вся логика в одном месте
 }
 ```
+
+### 🙏 Благодарности
+Проект разработан при поддержке AI-ассистента [Qwen](https://qwen.ai).
+Логика архитектуры, рефакторинг кода и документация создавались совместно.

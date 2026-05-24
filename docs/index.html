@@ -3,161 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unified Modal System (UM) — Демо</title>
+    <title>Unified Modal System — Демо</title>
 
+	<!-- 🔹 jQuery (минимум 1.9.1) -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+	<!-- 🔹 jQuery UI (минимум 1.12.1) -->
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+
+    <!-- 🔹 Подключаем стили UM -->
+    <link rel="stylesheet" href="../css/um-core.css">
+    
     <style>
         /* ==========================================
-           БАЗОВЫЕ СТИЛИ ДЛЯ ДЕМО-СТРАНИЦЫ
+           СТИЛИ ДЕМО-СТРАНИЦЫ
            ========================================== */
-        body { font-family: system-ui, -apple-system, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f5f7fa; color: #333; line-height: 1.5; }
-        .container { max-width: 850px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1, h2 { margin-top: 0; }
-        h2 { border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-bottom: 20px; }
-        .grid { display: grid; gap: 12px; margin-bottom: 30px; }
+        :root {
+            --bg-page: #f8f9fa;
+            --bg-card: #fff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border: #e9ecef;
+            --primary: #0d6efd;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 20px;
+            background: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 900px; margin: 0 auto;
+            background: var(--bg-card);
+            padding: 30px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 { margin: 0 0 8px; font-size: 1.75rem; }
+        h2 { margin: 30px 0 16px; font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        p { margin: 0 0 12px; color: var(--text-muted); }
+        
+        .grid { display: grid; gap: 10px; margin: 15px 0; }
         .grid-4 { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; color: #fff; text-align: center; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .btn {
+            padding: 10px 16px; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 14px; font-weight: 500;
+            transition: all 0.2s; color: #fff; text-align: center;
+        }
+        .btn:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
-        .btn-info { background: #0d6efd; }
-        .btn-success { background: #198754; }
-        .btn-warning { background: #ffc107; color: #000; }
-        .btn-danger { background: #dc3545; }
-        .btn-secondary { background: #6c757d; }
-        .note { background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #0d6efd; margin: 20px 0; font-size: 13px; }
-        code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
-        pre { background: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
-    </style>
-
-    <!-- ==========================================
-         СТИЛИ UM (В ПРОЕКТЕ ВЫНЕСТИ В um-core.css)
-         ========================================== -->
-    <style>
-        .um_info, .um_success, .um_warning, .um_error { position: relative; padding: 12px 16px 12px 48px; margin-bottom: 12px; border-radius: 6px; border-left: 4px solid transparent; font-size: 14px; line-height: 1.4; min-height: 44px; display: flex; align-items: center; }
-        .um_info:before, .um_success:before, .um_warning:before, .um_error:before { position: absolute; top: 50%; left: 12px; transform: translateY(-50%); font-size: 18px; font-weight: bold; line-height: 1; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
-        .um_info { color: #084298; background: #e7f1ff; border-left-color: #0d6efd; } .um_info:before { content: "ℹ"; color: #0d6efd; }
-        .um_success { color: #0f5132; background: #e6f7ed; border-left-color: #198754; } .um_success:before { content: "✓"; color: #198754; }
-        .um_warning { color: #664d03; background: #fff3cd; border-left-color: #ffc107; } .um_warning:before { content: "⚠"; color: #ffc107; }
-        .um_error { color: #842029; background: #fde8e8; border-left-color: #dc3545; } .um_error:before { content: "✕"; color: #dc3545; }
-        @keyframes um-slideInRight { from { opacity: 0; transform: translateX(100%) translateY(-10px); } to { opacity: 1; transform: translateX(0) translateY(0); } }
-        .um-alert-top-right { top: 20px; right: 20px; left: auto; bottom: auto; }
-        .um-alert-top-left { top: 20px; left: 20px; right: auto; bottom: auto; }
-        @media (max-width: 480px) { .um_info, .um_success, .um_warning, .um_error { padding-left: 44px; margin-left: 8px; margin-right: 8px; } .um_info:before, .um_success:before, .um_warning:before, .um_error:before { left: 8px; font-size: 16px; } }
+		.btn-info { background: #0d6efd; }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-danger { background: var(--danger); }
+		.btn-secondary { background: #6c757d; }
+        .btn-outline { background: #fff; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f8f9fa; }
+        
+        .note {
+            background: #e7f1ff; padding: 12px 16px;
+            border-radius: 6px; border-left: 4px solid var(--primary);
+            margin: 15px 0; font-size: 13px;
+        }
+        .note code { background: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 3px; }
+        
+        pre {
+            background: #212529; color: #f8f9fa;
+            padding: 15px; border-radius: 6px;
+            overflow-x: auto; font-size: 12px; margin: 10px 0;
+        }
+        code { font-family: ui-monospace, SFMono-Regular, monospace; }
+        
+        .toggle {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 12px; background: #f8f9fa;
+            border-radius: 6px; font-size: 13px; margin: 10px 0;
+        }
+        .toggle input { width: 16px; height: 16px; }
+        
+        /* 🔹 Кастомные темы для демо */
+        .um_modal-dark .um_modal-header { background: #212529; color: #fff; }
+        .um_modal-dark .um_modal-title { color: #fff !important; }
+        .um_modal-dark .um_modal-close { color: #adb5bd; }
+        .um_modal-dark { background: #343a40 !important; color: #f8f9fa !important; }
+        
+        .um_modal-large { max-width: 700px !important; width: 95% !important; }
+        .um_modal-center .um_modal-footer { justify-content: center !important; }
+        .um_modal-gradient .um_modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .um_modal-gradient .um_modal-title { color: #fff !important; }
+        
+        .demo-log {
+            background: #f8f9fa; padding: 12px;
+            border-radius: 6px; font-size: 13px;
+            min-height: 40px; max-height: 120px; overflow-y: auto;
+        }
+        .demo-log div { padding: 2px 0; border-bottom: 1px dashed var(--border); }
+        .demo-log div:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧩 Unified Modal System (UM)</h1>
+        <h1>🧩 Unified Modal System</h1>
+        <p>Демонстрация возможностей в режиме <strong>Custom (Vanilla JS)</strong></p>
+        
         <div class="note">
-            <strong>Режим работы:</strong> <code>jQuery UI: <span id="jq-status">Выключен</span></code> | <code>Custom (Vanilla): Встроен</code><br>
+            <strong>Режим работы:</strong> <code id="mode-indicator">Custom</code><br>
+            <strong>Конфигурация:</strong>
+            <label class="toggle">
+                <input type="checkbox" id="jq-toggle" onchange="toggleMode()">
+                Использовать jQuery UI
+            </label><br>
             💡 Система сама определяет библиотеки. Достаточно указать <code>window.UM_CONFIG.jquery_ui = true</code>, если jQuery UI подключён или <code>window.UM_CONFIG.jquery_ui = false</code> если отключен.
         </div>
-
-        <h2>1. Уведомления <code>UM_Alert(type, message, options)</code></h2>
+		
+        <!-- 🔹 UM_Alert -->
+        <h2>🔔 UM_Alert — Уведомления</h2>
         <div class="grid grid-4">
-            <button class="btn btn-info" onclick="UM_Alert('info', 'Информационное сообщение.')">Info</button>
+            <button class="btn btn-info" onclick="UM_Alert('info', 'Информационное сообщение')">Info</button>
             <button class="btn btn-success" onclick="UM_Alert('success', 'Данные успешно сохранены!')">Success</button>
-            <button class="btn btn-warning" onclick="UM_Alert('warning', 'Внимание: проверьте данные.')">Warning</button>
-            <button class="btn btn-danger" onclick="UM_Alert('error', 'Произошла ошибка сети.')">Error</button>
-            <button class="btn btn-secondary" onclick="UM_Alert('info', 'Долгое уведомление (5 сек)', {duration: 5000})">Долгое (5с)</button>
-            <button class="btn btn-secondary" onclick="UM_Alert('success', 'Слева сверху', {position: 'top-left'})">Позиция: top-left</button>
+            <button class="btn btn-warning" onclick="UM_Alert('warning', 'Внимание: проверьте данные')">Warning</button>
+            <button class="btn btn-danger" onclick="UM_Alert('error', 'Произошла ошибка сети')">Error</button>
+            <button class="btn btn-secondary" onclick="UM_Alert('info', 'Долгое (5 сек)', {duration:5000})">Долгое (5с)</button>
+            <button class="btn btn-outline" onclick="UM_Alert('success', 'Слева', {position:'top-left'})">Позиция: top-left</button>
+			<button class="btn btn-outline" onclick="UM_Alert('success', 'Справа', {position:'top-right'})">Позиция: top-right</button>
+			<button class="btn btn-outline" onclick="UM_Alert('success', 'Снизу справа', {position:'bottom-right'})">Позиция: bottom-right</button>
+			<button class="btn btn-outline" onclick="UM_Alert('success', 'Снизу слева', {position:'bottom-left'})">Позиция: bottom-left</button>
+			<button class="btn btn-outline" onclick="UM_Alert('success', 'Снизу слева', {position:'bottom-center'})">Позиция: bottom-left</button>
         </div>
 
-        <h2>2. Модальные окна <code>UM_ShowModal(opts)</code></h2>
+        <!-- 🔹 UM_ShowModal: Базовые примеры -->
+        <h2>🪟 UM_ShowModal — Модальные окна</h2>
+        
+        <p><strong>Базовые:</strong></p>
         <div class="grid grid-4">
-            <button class="btn btn-info" onclick="demoLoadContent()">📥 Загрузить контент</button>
-            <button class="btn btn-warning" onclick="demoActionConfirm()">✅ Подтверждение (Action)</button>
-            <button class="btn btn-success" onclick="demoCustomButtons()">🎨 Кастомные кнопки</button>
-            <button class="btn btn-secondary" onclick="demoOnLoad()">⚙️ Манипуляции в onLoad</button>
+            <button class="btn btn-primary" onclick="demoBasic()">📋 Базовое</button>
+            <button class="btn btn-success" onclick="demoAction()">✅ Подтверждение</button>
+            <button class="btn btn-warning" onclick="demoCustomClasses()">🎨 Кастомные классы</button>
+            <button class="btn btn-outline" onclick="demoDark()">🌙 Тёмная тема</button>
+        </div>
+        
+        <p><strong>С кастомизацией частей:</strong></p>
+        <div class="grid grid-4">
+            <button class="btn btn-outline" onclick="demoGradient()">🌈 Градиент</button>
+            <button class="btn btn-outline" onclick="demoLarge()">📏 Большое окно</button>
+            <button class="btn btn-outline" onclick="demoCenterBtns()">🔘 Кнопки по центру</button>
+            <button class="btn btn-outline" onclick="demoOnLoad()">⚙️ onLoad + api</button>
         </div>
 
-        <h2>📖 Как подключить в реальном проекте</h2>
-        <pre><code>&lt;!-- 1. Конфиг и языки (до um-core.js) --&gt;
+        <!-- 🔹 UM_InlineAction -->
+        <h2>⚡ UM_InlineAction — Быстрые действия</h2>
+        <div class="grid grid-4">
+            <button class="btn btn-primary" onclick="demoInline()">🔄 Обновить счётчик</button>
+            <button class="btn btn-success" onclick="demoInlineCallback()">📝 С колбэком</button>
+            <button class="btn btn-outline" onclick="demoConfirm()">❓ ConfirmAction</button>
+        </div>
+        <div style="margin:10px 0;padding:10px;background:#f8f9fa;border-radius:6px;">
+            Счётчик: <strong id="inline-counter">0</strong>
+            <span id="inline-status" style="margin-left:10px;color:var(--text-muted);"></span>
+        </div>
+
+        <!-- 🔹 Код подключения -->
+        <h2>📦 Подключение в проекте</h2>
+        <pre><code>&lt;!-- 1. Конфиг (до um-core.js) --&gt;
 &lt;script&gt;
   window.UM_CONFIG = { jquery_ui: false };
-  var lang = { close: 'Закрыть', save: 'Сохранить', cancel: 'Отмена' };
+  var lang = { close: 'Закрыть', save: 'Сохранить', cancel: 'Отмена', insert: 'Вставить' };
 &lt;/script&gt;
 
-&lt;!-- 2. Основной файл системы --&gt;
-&lt;script src="/js/lib/um-core.js"&gt;&lt;/script&gt;
+&lt;!-- 2. Стили и скрипт --&gt;
+&lt;link rel="stylesheet" href="../css/um-core.css"&gt;
+&lt;script src="../js/um-core.js"&gt;&lt;/script&gt;
 
 &lt;!-- 3. Использование --&gt;
 &lt;script&gt;
   UM_Alert('success', 'Готово!');
-  UM_ShowModal({ url: '/ajax/data.php', title: 'Данные' });
+  UM_ShowModal({ title: 'Привет', descr: 'Текст окна' });
 &lt;/script&gt;</code></pre>
+
+        <!-- 🔹 Лог действий -->
+        <h2>📋 Лог действий</h2>
+        <div id="demo-log" class="demo-log"></div>
     </div>
 
-    <!-- ==========================================
-         MOCK СКРИПТЫ (ДЛЯ ДЕМОНСТРАЦИИ)
-         В РЕАЛЬНОМ ПРОЕКТЕ УДАЛИТЕ ЭТОТ БЛОК И ПОДКЛЮЧИТЕ um-core.js
-         ========================================== -->
+    <!-- 🔹 Подключаем реальный um-core.js -->
+    <script src="../js/um-core.js"></script>
+    
     <script>
-        // Глобальные настройки
+        // ==========================================
+        // НАСТРОЙКИ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ==========================================
+        
+        // Глобальный конфиг
         window.UM_CONFIG = { jquery_ui: false };
-        var lang = { close: 'Закрыть', save: 'Сохранить', cancel: 'Отмена' };
-        document.getElementById('jq-status').textContent = window.UM_CONFIG.jquery_ui ? 'Включён' : 'Выключен';
-	</script>
-
-	<script>
-        // UM_Alert (демо-версия)
-        function UM_Alert(type, message, options) {
-            var opts = options || {};
-            var duration = opts.duration !== undefined ? opts.duration : 3000;
-            var clickToClose = opts.clickToClose !== false;
-            var position = opts.position || 'top-right';
-            var classMap = { 'error': 'um_error', 'success': 'um_success', 'warning': 'um_warning', 'info': 'um_info' };
-            var msgClass = classMap[type] || 'um_info';
-            var notify = document.createElement('div');
-            notify.className = msgClass + ' um-alert-popup um-alert-' + position.replace('-', '-');
-            notify.innerHTML = message;
-            Object.assign(notify.style, { position: 'fixed', margin: '0', zIndex: 9999, cursor: clickToClose ? 'pointer' : 'default', animation: 'um-slideInRight 0.3s ease', maxWidth: '400px', minWidth: '280px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' });
-            document.body.appendChild(notify);
-            var close = function() { notify.style.transition = 'opacity 0.3s ease, transform 0.3s ease'; notify.style.opacity = '0'; notify.style.transform = 'translateY(-10px)'; setTimeout(function() { if (notify.parentNode) notify.parentNode.removeChild(notify); }, 300); };
-            if (clickToClose) notify.addEventListener('click', close);
-            if (duration > 0) setTimeout(close, duration);
-            return notify;
+        var lang = { close: 'Закрыть', save: 'Сохранить', cancel: 'Отмена', insert: 'Вставить' };
+        
+        function log(msg) {
+            var el = document.getElementById('demo-log');
+            var time = new Date().toLocaleTimeString();
+            el.innerHTML = '<div>[' + time + '] ' + msg + '</div>' + el.innerHTML;
+            if (el.children.length > 20) el.lastChild.remove();
         }
-
-        // UM_ShowModal (демо-версия)
-        function UM_ShowModal(opts) {
-            var url = opts.url || '', postData = opts.data || {}, title = opts.title || 'Информация', width = opts.width || 500, descr = opts.descr || '', isAction = !!opts.action, confirmText = opts.confirmText || 'Выполнить', buttons = opts.buttons || [], onLoad = opts.onLoad || null;
-            var esc = function(s){ if(!s) return ''; var d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
-            if (isAction) { buttons = [{ text: lang.cancel || 'Отмена', class: 'secondary', click: function(c){ c(); } }, { text: confirmText, class: 'primary', click: function(c){ c(); UM_Alert('success', 'Действие выполнено!'); }}]; }
-            if (buttons.length === 0) buttons.push({ text: lang.close || 'Закрыть', class: 'primary', click: function(c){ c(); } });
-
-            var modal = document.createElement('div'); modal.className = 'gk-modal msg_modal ' + (opts.className || '');
-            modal.innerHTML = '<div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #eee;"><div style="font-weight:600;font-size:1.1em;">'+esc(title)+'</div><a role="button" class="modal-close" style="cursor:pointer;font-size:1.5em;color:#666;">&times;</a></div><div class="modal-body" style="overflow-y:auto;flex:1;padding:0 4px;max-height:70vh;"></div><div class="modal-footer" style="margin-top:20px;padding-top:16px;border-top:1px solid #eee;text-align:right;"></div>';
-            Object.assign(modal.style, {position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:10002,borderRadius:'8px',boxShadow:'0 4px 30px rgba(0,0,0,0.25)',maxWidth:'95%',width:width+'px',background:'#fff',display:'flex',flexDirection:'column',fontFamily:'inherit'});
-            var bd = document.createElement('div'); bd.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:10001;';
-            document.body.appendChild(bd); document.body.appendChild(modal);
-            var body = modal.querySelector('.modal-body'), footer = modal.querySelector('.modal-footer');
-            if(descr) body.innerHTML = '<div style="padding:12px 8px;margin-bottom:12px;line-height:1.5;">' + esc(descr) + '</div>';
-            footer.innerHTML = buttons.map(function(b, i) { var t = b.type === 'submit' ? 'type="submit"' : 'type="button"'; var s = b.class === 'primary' ? 'background:#007bff;color:#fff;border:none;' : (b.class === 'danger' ? 'background:#dc3545;color:#fff;border:none;' : 'border:1px solid #ccc;background:#fff;'); return '<button data-idx="'+i+'" '+t+' style="margin-left:8px;padding:8px 20px;border-radius:4px;cursor:pointer;'+s+'">'+esc(b.text)+'</button>'; }).join('');
-
-            var closeFn = function(){ if(modal.parentNode) modal.remove(); if(bd.parentNode) bd.remove(); document.removeEventListener('keydown',onKey); };
-            var onKey = function(e){ if(e.key=='Escape') closeFn(); }; document.addEventListener('keydown', onKey);
-            modal.querySelector('.modal-close').onclick = function(e){ e.preventDefault(); closeFn(); };
-            footer.querySelectorAll('button[data-idx]').forEach(function(btn, i){ var h = buttons[i].click; if(h) btn.onclick = function(e){ e.preventDefault(); h.call(modal, closeFn); }; });
-            bd.onclick = closeFn;
-
-            // Имитация AJAX-загрузки
-            if (url && !isAction) {
-                body.innerHTML = '<div style="padding:40px;text-align:center;color:#666;">⏳ Загрузка...</div>';
-                setTimeout(function() {
-                    body.innerHTML = '<div style="padding:20px;">✅ Контент загружен.<br>URL: <code>' + url + '</code><br><br>В реальном проекте здесь будет ответ сервера. Все кнопки и `onLoad` работают штатно.</div>';
-                    if (onLoad) onLoad(body.innerHTML, { element: modal, close: closeFn, setContent: function(h){ body.innerHTML = h; }, setButtons: function(arr){ /* демо-заглушка */ } });
-                }, 800);
-            } else if (onLoad) {
-                onLoad(body.innerHTML, { element: modal, close: closeFn, setContent: function(h){ body.innerHTML = h; }, setButtons: function(arr){ /* демо-заглушка */ } });
-            }
+        
+		function toggleMode() {
+			var checked = document.getElementById('jq-toggle').checked;
+			// 🔹 Устанавливаем строку 'true'/'false', а не boolean
+			window.UM_CONFIG.jquery_ui = checked ? 'true' : 'false';
+			
+			document.getElementById('mode-indicator').textContent = checked ? 'jQuery UI' : 'Custom';
+			console.log('UM mode:', window.UM_CONFIG.jquery_ui);
+		}
+        
+        // ==========================================
+        // ДЕМО: UM_Alert (уже работает из коробки)
+        // ==========================================
+        
+        // ==========================================
+        // ДЕМО: UM_ShowModal
+        // ==========================================
+        
+        function demoBasic() {
+            UM_ShowModal({
+                title: 'Базовое окно',
+                descr: 'Стандартные стили, кнопки по умолчанию.',
+                width: 400,
+                buttons: [
+                    { text: 'Отмена', class: 'secondary', click: function(c){ c(); log('Отменено'); } },
+                    { text: 'Готово', class: 'primary', click: function(c){ log('Подтверждено'); c(); } },
+                ],
+            });
         }
-
-        // Демо-вызовы
-        function demoLoadContent() { UM_ShowModal({ url: '../examples/demo.php', title: 'Загрузка контента', width: 600 }); }
-        function demoActionConfirm() { UM_ShowModal({ title: 'Подтверждение', descr: 'Вы действительно хотите выполнить это действие?', action: true, confirmText: 'Да, выполнить' }); }
-        function demoCustomButtons() { UM_ShowModal({ title: 'Кастомные кнопки', descr: 'Каждая кнопка имеет свой класс и логику.', buttons: [{ text: 'Отмена', class: 'secondary', click: function(c){ c(); } }, { text: 'Подробнее', class: 'info', click: function(){ UM_Alert('info', 'Вы нажали "Подробнее"'); } }, { text: 'Принять', class: 'primary', click: function(c){ UM_Alert('success', 'Принято!'); c(); } }] }); }
-        function demoOnLoad() { UM_ShowModal({ title: 'Манипуляции в onLoad', width: 500, onLoad: function(html, api) { api.setContent('<div style="padding:20px;background:#f8f9fa;border-radius:4px;">Этот контент подменён через <code>api.setContent()</code> сразу после открытия.</div>'); api.setButtons([{ text: 'Понятно', class: 'primary', click: function(c){ c(); UM_Alert('info', 'Закрыто вручную'); } }]); } }); }
+        
+        function demoAction() {
+            UM_ShowModal({
+                title: 'Подтверждение',
+                descr: 'Режим <code>action: true</code> показывает кнопки "Отмена/Выполнить".',
+                width: 420,
+                action: true,
+                confirmText: 'Выполнить',
+                onSuccess: function() { log('Действие выполнено!'); },
+                onError: function() { log('Действие отменено'); }
+            });
+        }
+        
+        function demoCustomClasses() {
+            UM_ShowModal({
+                title: 'Кастомные классы',
+                descr: 'Использованы: <code>classHeader</code>, <code>classBody</code>, <code>classFooter</code>',
+                width: 450,
+                className: 'um_modal-gradient',
+                classHeader: 'rounded-top',
+                classBody: 'custom-body',
+                classFooter: 'um_modal-center',
+                classContent: 'shadow-sm',
+                buttons: [
+                    { text: 'Cancel', class: 'btn-outline', click: function(c){ c(); } },
+                    { text: 'Save', class: 'btn-success', click: function(c){ log('Saved!'); c(); } }
+                ]
+            });
+        }
+        
+        function demoDark() {
+            UM_ShowModal({
+                title: 'Тёмная тема',
+                descr: 'Класс <code>um_modal-dark</code> переопределяет цвета через CSS.',
+                width: 400,
+                className: 'um_modal-dark',
+                buttons: [
+                    { text: 'Закрыть', class: 'primary', click: function(c){ log('Закрыто'); c(); } }
+                ]
+            });
+        }
+        
+        function demoGradient() {
+            UM_ShowModal({
+                title: 'Градиентная шапка',
+                descr: 'Класс <code>um_modal-gradient</code> добавляет градиент в заголовок.',
+                width: 400,
+                className: 'um_modal-gradient',
+                buttons: [
+                    { text: 'OK', class: 'primary', click: function(c){ c(); } }
+                ]
+            });
+        }
+        
+        function demoLarge() {
+            UM_ShowModal({
+                title: 'Большое окно',
+                descr: 'Класс <code>um_modal-large</code> увеличивает ширину. Полезно для форм и таблиц.',
+                width: 650,
+                className: 'um_modal-large',
+                buttons: [
+                    { text: 'Закрыть', class: 'primary', click: function(c){ c(); } }
+                ]
+            });
+        }
+        
+        function demoCenterBtns() {
+            UM_ShowModal({
+                title: 'Кнопки по центру',
+                descr: 'Класс <code>um_modal-center</code> центрирует кнопки в футере.',
+                width: 400,
+                className: 'um_modal-center',
+                buttons: [
+                    { text: 'Нет', class: 'secondary', click: function(c){ c(); } },
+                    { text: 'Да', class: 'primary', click: function(c){ log('Да!'); c(); } }
+                ]
+            });
+        }
+        
+        function demoOnLoad() {
+            UM_ShowModal({
+                title: 'Манипуляции в onLoad',
+                width: 450,
+                onLoad: function(html, api) {
+                    // Заменяем контент
+                    api.setContent(
+                        '<div style="padding:20px;background:#f8f9fa;border-radius:8px;">' +
+                        '✅ Контент подменён через <code>api.setContent()</code><br><br>' +
+                        '<button class="btn btn-primary" onclick="log(\'Клик внутри модала\')">Тест кнопки</button>' +
+                        '</div>'
+                    );
+                    // Меняем кнопки
+                    api.setButtons([{
+                        text: 'Понятно',
+                        class: 'primary',
+                        click: function(c){ log('Закрыто вручную'); c(); }
+                    }]);
+                }
+            });
+        }
+        
+        // ==========================================
+        // ДЕМО: UM_InlineAction
+        // ==========================================
+        
+        var counter = 0;
+        
+        function demoInline() {
+            // Имитация AJAX-ответа
+            setTimeout(function() {
+                counter++;
+                document.getElementById('inline-counter').textContent = counter;
+                document.getElementById('inline-status').textContent = 'Обновлено: ' + new Date().toLocaleTimeString();
+                log('Счётчик: ' + counter);
+            }, 300);
+        }
+        
+        function demoInlineCallback() {
+            UM_InlineAction({
+                url: '#',
+                callback: function(result) {
+                    log('Колбэк вызван с результатом');
+                    UM_Alert('success', 'Колбэк сработал!');
+                }
+            });
+        }
+        
+        // ==========================================
+        // ДЕМО: UM_ConfirmAction
+        // ==========================================
+        
+        function demoConfirm() {
+            UM_ConfirmAction(
+                'Вы действительно хотите продолжить?',
+                function() { log('Подтверждено!'); UM_Alert('success', 'Действие выполнено'); },
+                function() { log('Отменено'); }
+            );
+        }
+        
+        // ==========================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ==========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Демо загружено. Режим: Custom');
+        });
     </script>
-	
 </body>
 </html>
